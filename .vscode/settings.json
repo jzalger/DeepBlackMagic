@@ -1,1 +1,3 @@
-{}
+{
+    "cmake.sourceDirectory": "${workspaceFolder}/.pio/libdeps/featheresp32/Bolder Flight Systems SBUS"
+}
