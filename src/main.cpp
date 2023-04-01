@@ -14,7 +14,6 @@ bool aux_up_state = false;
 bool aux_down_state = false;
 
 
-
 void setup() {
   Serial.begin(9600);
   pinMode(RECORD_PIN, INPUT);
