@@ -100,6 +100,7 @@ void loop() {
 // ################################################################################
 
 void send_sbus(int ch, int value) {
+  //Writes the value for a specific channel to the SBUS
   bfs::SbusData data;
   data.ch[ch] = value;
   sbus.data(data);
@@ -108,14 +109,14 @@ void send_sbus(int ch, int value) {
 
 void toggle_sbus(int ch, int value) {
   // Sends a message with "value" then a following message with the neutral setting
-  // Used to toggle something high or low followed by returnning to neutral
+  // Used to toggle or increment something high or low.
   send_sbus(ch, value);
   vTaskDelay(100);
   send_sbus(ch, SBUS_MID);
 }
 
 void toggle_record() {
-  // Starts or stops recording
+  // Starts or stops camera recording
   toggle_sbus(SBUS_REC_CH, SBUS_HIGH);
 }
 
