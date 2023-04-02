@@ -12,9 +12,9 @@
 #define SERIAL_RX_PIN 16
 #define SERIAL_TX_PIN 17
 
-#define SBUS_REC_CH 1
-#define SBUS_IRIS_CH 2
-#define SBUS_ISO_CH 3
+#define SBUS_REC_CH 0
+#define SBUS_IRIS_CH 1
+#define SBUS_ISO_CH 2
 
 bool rec_state = false;
 bool aux_up_state = false;
