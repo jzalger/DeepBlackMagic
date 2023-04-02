@@ -2,9 +2,9 @@
 #include <HardwareSerial.h>
 #include "sbus.h"
 
-#define RECORD_PIN A2
-#define AUX_UP_PIN A3
-#define AUX_DOWN_PIN A4
+#define RECORD_PIN A0
+#define AUX_UP_PIN A1
+#define AUX_DOWN_PIN A5
 
 #define SBUS_HIGH 212
 #define SBUS_MID 128
@@ -12,15 +12,14 @@
 #define SERIAL_RX_PIN 16
 #define SERIAL_TX_PIN 17
 
-#define SBUS_REC_CH 0
-#define SBUS_IRIS_CH 1
-#define SBUS_ISO_CH 2
+#define SBUS_REC_CH 1
+#define SBUS_IRIS_CH 2
+#define SBUS_ISO_CH 3
 
 bool rec_state = false;
 bool aux_up_state = false;
 bool aux_down_state = false;
 
-bfs::SbusData data;
 bfs::SbusTx sbus(&Serial1, SERIAL_RX_PIN, SERIAL_TX_PIN, true);
 
 struct Button {
@@ -37,6 +36,9 @@ unsigned long last_button_time = 0;
 void toggle_record();
 void increase_fstop();
 void decrease_fstop();
+
+// Equates to [f1.8, f2, f2.8, f4, f5.6, f8, f11, f16, f22]
+uint8_t apertures[9] = {44, 65, 90, 110, 120, 140, 155, 180, 212};
 
 // #################################################################################
 
@@ -68,12 +70,11 @@ void IRAM_ATTR aux_down_isr(){
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("Started Serial");
-  pinMode(RECORD_PIN, INPUT);
+  pinMode(RECORD_PIN, INPUT_PULLDOWN);
   attachInterrupt(RECORD_PIN, record_isr, HIGH);
-  pinMode(AUX_UP_PIN, INPUT);
+  pinMode(AUX_UP_PIN, INPUT_PULLDOWN);
   attachInterrupt(AUX_UP_PIN, aux_up_isr, HIGH);
-  pinMode(AUX_DOWN_PIN, INPUT);
+  pinMode(AUX_DOWN_PIN, INPUT_PULLDOWN);
   attachInterrupt(AUX_DOWN_PIN, aux_down_isr, HIGH);
   sbus.Begin();
 }
@@ -98,13 +99,19 @@ void loop() {
 
 // ################################################################################
 
-void toggle_sbus(int ch, int value) {
-  // Sends a message with "value" then a following message with the neutral setting
-  // Used to toggle something high or low followed by returnning to neutral
+void send_sbus(int ch, int value) {
+  bfs::SbusData data;
   data.ch[ch] = value;
   sbus.data(data);
   sbus.Write();
-  data.ch[ch] = SBUS_MID;
+}
+
+void toggle_sbus(int ch, int value) {
+  // Sends a message with "value" then a following message with the neutral setting
+  // Used to toggle something high or low followed by returnning to neutral
+  send_sbus(ch, value);
+  vTaskDelay(100);
+  send_sbus(ch, SBUS_MID);
 }
 
 void toggle_record() {
