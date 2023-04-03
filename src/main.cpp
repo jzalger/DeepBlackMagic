@@ -75,25 +75,30 @@ void send_sbus(int ch, int value) {
   sbus.Write();
 }
 
-void toggle_sbus(int ch, int value) {
-  // Sends a message with "value" then a following message with the neutral setting
-  // Used to toggle or increment something high or low.
-  send_sbus(ch, value);
-  vTaskDelay(100);
-  send_sbus(ch, SBUS_MID);
-}
-
 void toggle_record() {
   // Starts or stops camera recording
-  toggle_sbus(SBUS_REC_CH, SBUS_HIGH);
+  if (recording == false){
+    send_sbus(SBUS_REC_CH, SBUS_HIGH);
+  } else {
+    send_sbus(SBUS_REC_CH, SBUS_MIN);
+  }
+  
 }
 
 void increase_fstop() {
   // Increases the f-stop (closes the aperature) by one stop
-  toggle_sbus(SBUS_IRIS_CH, SBUS_HIGH);
+  if (iris_index < 8) {
+    ++iris_index;
+    Serial.printf("Sending aperature val: %d at index %d\n", apertures[iris_index], iris_index);
+    send_sbus(SBUS_IRIS_CH, apertures[iris_index]);
+  }
 }
 
 void decrease_fstop() {
   // Decreases the f-stop (opens the aperature) by one stop
-  toggle_sbus(SBUS_IRIS_CH, SBUS_MIN);
+    if (iris_index > 0) {
+    --iris_index;
+    Serial.printf("Sending aperature val: %d at index %d\n", apertures[iris_index], iris_index);
+    send_sbus(SBUS_IRIS_CH, apertures[iris_index]);
+  }
 }

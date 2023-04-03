@@ -16,9 +16,8 @@
 #define SBUS_IRIS_CH 1
 #define SBUS_ISO_CH 2
 
-bool rec_state = false;
-bool aux_up_state = false;
-bool aux_down_state = false;
+bool recording = false;
+uint8_t iris_index = 8;
 
 struct Button {
   const uint8_t pin;
