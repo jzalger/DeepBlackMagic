@@ -97,20 +97,26 @@ void increase_fstop() {
   // Increases the f-stop (closes the aperature) by one stop
   if (iris_index < 8) {
     ++iris_index;
-    toggle_sbus(SBUS_IRIS_CH, SBUS_MIN);
+    //toggle_sbus(SBUS_IRIS_CH, SBUS_MIN);
     Serial.printf("Sending aperature val: %d at index %d\n", apertures[iris_index], iris_index);
-    //send_sbus(SBUS_IRIS_CH, apertures[iris_index]);
+    send_sbus(SBUS_IRIS_CH, apertures[iris_index]);
+    vTaskDelay(SBUS_DELAY);
   }
+  // iris_level = iris_index + SBUS_INC;
+  // send_sbus(SBUS_IRIS_CH, iris_level);
 }
 
 void decrease_fstop() {
   // Decreases the f-stop (opens the aperature) by one stop
     if (iris_index > 0) {
     --iris_index;
-    toggle_sbus(SBUS_IRIS_CH, SBUS_HIGH);
+    //toggle_sbus(SBUS_IRIS_CH, SBUS_HIGH);
     Serial.printf("Sending aperature val: %d at index %d\n", apertures[iris_index], iris_index);
-    //send_sbus(SBUS_IRIS_CH, apertures[iris_index]);
+    send_sbus(SBUS_IRIS_CH, apertures[iris_index]);
+    vTaskDelay(SBUS_DELAY);
   }
+  // iris_level = iris_index - SBUS_INC;
+  // send_sbus(SBUS_IRIS_CH, iris_level);
 }
 
  void init_sbus(){
