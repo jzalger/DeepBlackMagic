@@ -34,7 +34,7 @@ void IRAM_ATTR record_isr();
 void IRAM_ATTR aux_up_isr();
 void IRAM_ATTR aux_down_isr();
 
-void toggle_sbus();
+void toggle_sbus(int ch, int value);
 void toggle_record();
 void increase_fstop();
 void decrease_fstop();
